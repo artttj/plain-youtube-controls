@@ -2,8 +2,6 @@
 
 const $player = document.getElementById('movie_player');
 
-localStorage.getItem
-
 let appState = {
     autoReplay: false,
     alwaysHD:   false
