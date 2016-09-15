@@ -49,13 +49,15 @@ autoreplayCheckbox.addEventListener('change', function (e) {
 });
 
 $player.addEventListener('onStateChange', function (state) {
+    if ($player.classList.contains('unstarted-mode')) return;
+
     // replay if the playback is finished
     if (state === 0 && appState.autoReplay) {
         $player.seekTo(0);
     }
 
     // trying to reload vid every 3 sec if something went wrong
-    if (state === -1 && $player.getCurrentTime() > 1) {
+    if (state === -1) {
         setTimeout(function(){
             $player.loadVideoById({
                 videoId: $player.getVideoData().video_id,
