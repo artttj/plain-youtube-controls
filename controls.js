@@ -7,6 +7,7 @@ let appState = {
     alwaysHD:   false
 };
 
+// control panel template
 const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
 settingsLine.setAttribute('style', 'width: 20em; height: auto; color: #607D8B; ');
@@ -48,9 +49,12 @@ autoreplayCheckbox.addEventListener('change', function (e) {
 });
 
 $player.addEventListener('onStateChange', function (state) {
+    // replay if the playback is finished
     if (state === 0 && appState.autoReplay) {
         $player.seekTo(0);
     }
+
+    // trying to reload vid every 3 sec if something went wrong
     if (state === -1) {
         setTimeout(function(){
             $player.loadVideoById({
@@ -61,5 +65,6 @@ $player.addEventListener('onStateChange', function (state) {
     }
 });
 
+// finally drawing controls
 $player.parentNode.appendChild(settingsLine);
 
