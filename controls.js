@@ -1,7 +1,13 @@
 'use strict';
 
 const $player = document.getElementById('movie_player');
-let autoReplay = false;
+
+localStorage.getItem
+
+let appState = {
+    autoReplay: false,
+    alwaysHD:   false
+};
 
 const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
@@ -14,19 +20,39 @@ settingsLine.innerHTML = `
 const hdCheckbox = settingsLine.querySelector('.yt-controls-always-hd');
 const autoreplayCheckbox = settingsLine.querySelector('.yt-controls-replay');
 
+function saveAppState() {
+    localStorage.setItem('plain_yt_controls', JSON.stringify(appState));
+}
+
+function getInitialAppState() {
+    let storageAppSate = localStorage.getItem('plain_yt_controls');
+    if (storageAppSate) {
+        appState = JSON.parse(storageAppSate);
+        hdCheckbox.checked = appState.alwaysHD;
+        autoreplayCheckbox.checked = appState.autoReplay;
+        appState.alwaysHD && $player.setPlaybackQuality('highres');
+    } else {
+        saveAppState();
+    }
+}
+
+getInitialAppState();
+
 hdCheckbox.addEventListener('change', function (e) {
-    let toHD = e.target.checked;
-    toHD && $player.setPlaybackQuality('highres');
+    appState.alwaysHD = e.target.checked;
+    appState.alwaysHD && $player.setPlaybackQuality('highres');
+    saveAppState();
 });
 
 autoreplayCheckbox.addEventListener('change', function (e) {
-    autoReplay = e.target.checked;
+    appState.autoReplay = e.target.checked;
+    saveAppState();    
 });
 
 $player.addEventListener('onStateChange', function(state) {
-    if(state === 0 && autoReplay) {
+    if(state === 0 && appState.autoReplay) {
         $player.seekTo(0);
-    }
+    } 
 });
 
 $player.parentNode.appendChild(settingsLine);
