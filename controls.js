@@ -13,8 +13,8 @@ const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
 settingsLine.setAttribute('style', 'width: 20em; height: auto; color: #607D8B; ');
 settingsLine.innerHTML = `
-    <label><input type="checkbox" class="yt-controls-always-hd"/>Always HD</label>
     <label><input type="checkbox" class="yt-controls-replay"/>Auto Replay</label>
+    <label><input type="checkbox" class="yt-controls-always-hd"/>Always HD</label>
     `;
 
 const hdCheckbox = settingsLine.querySelector('.yt-controls-always-hd');
@@ -49,10 +49,18 @@ autoreplayCheckbox.addEventListener('change', function (e) {
     saveAppState();    
 });
 
-$player.addEventListener('onStateChange', function(state) {
-    if(state === 0 && appState.autoReplay) {
+$player.addEventListener('onStateChange', function (state) {
+    if (state === 0 && appState.autoReplay) {
         $player.seekTo(0);
-    } 
+    }
+    if (state === -1) {
+        setTimeout(function(){
+            $player.loadVideoById({
+                videoId: $player.getVideoData().video_id,
+                startSeconds: $player.getCurrentTime()
+            });
+        }, 3000);
+    }
 });
 
 $player.parentNode.appendChild(settingsLine);
