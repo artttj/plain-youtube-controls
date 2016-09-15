@@ -29,7 +29,6 @@ function getInitialAppState() {
         appState = JSON.parse(storageAppSate);
         hdCheckbox.checked = appState.alwaysHD;
         autoreplayCheckbox.checked = appState.autoReplay;
-        appState.alwaysHD && $player.setPlaybackQuality('highres');
     } else {
         saveAppState();
     }
@@ -39,7 +38,10 @@ getInitialAppState();
 
 hdCheckbox.addEventListener('change', function (e) {
     appState.alwaysHD = e.target.checked;
-    appState.alwaysHD && $player.setPlaybackQuality('highres');
+    if (appState.alwaysHD) {
+        let bestQuality = $player.getAvailableQualityLevels()[0];
+        $player.setPlaybackQuality(bestQuality);
+    }
     saveAppState();
 });
 
@@ -54,6 +56,11 @@ $player.addEventListener('onStateChange', function (state) {
     // replay if the playback is finished
     if (state === 0 && appState.autoReplay) {
         $player.seekTo(0);
+    }
+
+    if (state === 1 && appState.alwaysHD) {
+        let bestQuality = $player.getAvailableQualityLevels()[0];
+        $player.setPlaybackQuality(bestQuality);
     }
 
     // trying to reload vid every 3 sec if something went wrong
