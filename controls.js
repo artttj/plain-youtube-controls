@@ -55,7 +55,7 @@ $player.addEventListener('onStateChange', function (state) {
     }
 
     // trying to reload vid every 3 sec if something went wrong
-    if (state === -1) {
+    if (state === -1 && $player.getCurrentTime() > 1) {
         setTimeout(function(){
             $player.loadVideoById({
                 videoId: $player.getVideoData().video_id,
