@@ -17,7 +17,7 @@
 
   "content_scripts": [{
     "matches": ["*://*.youtube.com/*"],
-    "js": ["content.js"]
+    "js": ["ready.min.js", "content.js"]
   }],
 
   "web_accessible_resources": ["controls.js"],
