@@ -50,20 +50,39 @@ autoreplayCheckbox.addEventListener('change', function (e) {
     saveAppState();    
 });
 
-$player.addEventListener('onStateChange', function (state) {
-    if ($player.classList.contains('unstarted-mode')) return;
-
+function autoReplay(state) {
+    let isInPlaylist = ~$player.getPlaylistIndex();
     // replay if the playback is finished
-    if (state === 0 && appState.autoReplay) {
+    if (state === 0) {
         $player.seekTo(0);
     }
 
-    if (state === 1 && appState.alwaysHD) {
+    if (isInPlaylist) {
+        let playbackInterval;
+        if (state === 1) {
+            let duration = Math.floor($player.getDuration() * 1000);
+            playbackInterval = setInterval(function(){
+                let curTime = Math.floor($player.getCurrentTime() * 1000);
+                if (curTime + 200 > duration) {
+                    $player.seekTo(0);
+                    clearInterval(playbackInterval);
+                }
+            }, 100);
+        } else {
+            clearInterval(playbackInterval);
+        }       
+    }    
+}
+
+function setBestQuality(state) {
+    if (state === 1) {
         let bestQuality = $player.getAvailableQualityLevels()[0];
         $player.setPlaybackQuality(bestQuality);
     }
+}
 
-    // trying to reload vid every 3 sec if something went wrong
+// trying to reload vid every 3 sec if something went wrong
+function checkForVideoCrash(state) {
     if (state === -1) {
         setTimeout(function(){
             $player.loadVideoById({
@@ -71,7 +90,14 @@ $player.addEventListener('onStateChange', function (state) {
                 startSeconds: $player.getCurrentTime()
             });
         }, 3000);
-    }
+    }    
+}
+
+$player.addEventListener('onStateChange', function (state) {
+    if ($player.classList.contains('unstarted-mode')) return;
+    appState.autoReplay && autoReplay(state);
+    appState.alwaysHD && setBestQuality(state);    
+    checkForVideoCrash(state);
 });
 
 // finally drawing controls
