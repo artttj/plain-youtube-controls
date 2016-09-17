@@ -7,6 +7,15 @@ let appState = {
     alwaysHD:   false
 };
 
+let curVideoId = false;
+
+const timingInterval = setInterval(function(){
+    localStorage.setItem(
+        'ytc_' + $player.getVideoData().video_id, 
+        $player.getCurrentTime()
+    );
+}, 3000);
+
 // control panel template
 const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
@@ -91,8 +100,17 @@ function checkForVideoCrash(state) {
     }    
 }
 
+function getVideoTiming(state) {
+    if(state === 1 && curVideoId !== $player.getVideoData().video_id) {
+        let lastTime = localStorage.getItem('ytc_' + $player.getVideoData().video_id);    
+        lastTime && $player.seekTo(lastTime);
+        curVideoId = $player.getVideoData().video_id;       
+    }
+}
+
 function checkState(state) {
     if ($player.classList.contains('unstarted-mode')) return;
+    getVideoTiming(state);
     appState.autoReplay && autoReplay(state);
     appState.alwaysHD && setBestQuality(state);    
     checkForVideoCrash(state);
