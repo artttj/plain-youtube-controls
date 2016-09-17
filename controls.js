@@ -41,6 +41,7 @@ function getInitialAppState() {
         appState = JSON.parse(storageAppSate);
         hdCheckbox.checked = appState.alwaysHD;
         autoreplayCheckbox.checked = appState.autoReplay;
+        storehistoryCheckbox.checked = appState.storeHistory;        
     } else {
         saveAppState();
     }
