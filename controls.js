@@ -23,6 +23,7 @@ let appState = {
 };
 
 let curVideoId = false;
+let timingInterval;
 
 function saveAppState() {
     localStorage.setItem('plain_yt_controls', JSON.stringify(appState));
@@ -109,7 +110,8 @@ function getVideoTiming(state) {
         lastTime && $player.seekTo(lastTime);
         curVideoId = $player.getVideoData().video_id;       
     }
-    const timingInterval = setInterval(function(){
+    clearInterval(timingInterval);
+    timingInterval = setInterval(function(){
         if (state === 0 || !$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
         localStorage.setItem(
             'ytc_' + $player.getVideoData().video_id, 
