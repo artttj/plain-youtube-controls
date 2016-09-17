@@ -56,6 +56,7 @@ autoreplayCheckbox.addEventListener('change', function (e) {
 
 storehistoryCheckbox.addEventListener('change', function (e) {
     appState.storeHistory = e.target.checked;
+    listenPlayerState();    
     saveAppState();    
 });
 
