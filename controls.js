@@ -2,14 +2,6 @@
 
 const $player = document.getElementById('movie_player');
 
-const timingInterval = setInterval(function(){
-    if (!$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
-    localStorage.setItem(
-        'ytc_' + $player.getVideoData().video_id, 
-        $player.getCurrentTime()
-    );
-}, 3000);
-
 // control panel template
 const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
@@ -116,6 +108,13 @@ function getVideoTiming(state) {
         lastTime && $player.seekTo(lastTime);
         curVideoId = $player.getVideoData().video_id;       
     }
+    const timingInterval = setInterval(function(){
+        if (state === 0 || !$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
+        localStorage.setItem(
+            'ytc_' + $player.getVideoData().video_id, 
+            $player.getCurrentTime()
+        );
+    }, 3000);
     if (state === 0) {
         localStorage.removeItem('ytc_' + $player.getVideoData().video_id);
     }
