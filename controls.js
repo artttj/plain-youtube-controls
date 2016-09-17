@@ -11,6 +11,7 @@ let appState = {
 let curVideoId = false;
 
 const timingInterval = setInterval(function(){
+    if (!$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
     localStorage.setItem(
         'ytc_' + $player.getVideoData().video_id, 
         $player.getCurrentTime()
