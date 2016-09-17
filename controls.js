@@ -111,10 +111,13 @@ function checkForVideoCrash(state) {
 }
 
 function getVideoTiming(state) {
-    if(state === 1 && curVideoId !== $player.getVideoData().video_id) {
+    if (state === 1 && curVideoId !== $player.getVideoData().video_id) {
         let lastTime = localStorage.getItem('ytc_' + $player.getVideoData().video_id);    
         lastTime && $player.seekTo(lastTime);
         curVideoId = $player.getVideoData().video_id;       
+    }
+    if (state === 0) {
+        localStorage.removeItem('ytc_' + $player.getVideoData().video_id);
     }
 }
 
