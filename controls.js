@@ -2,14 +2,6 @@
 
 const $player = document.getElementById('movie_player');
 
-let appState = {
-    autoReplay: false,
-    alwaysHD:   false,
-    storeHistory: false,
-};
-
-let curVideoId = false;
-
 const timingInterval = setInterval(function(){
     if (!$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
     localStorage.setItem(
@@ -31,6 +23,14 @@ settingsLine.innerHTML = `
 const hdCheckbox = settingsLine.querySelector('.yt-controls-always-hd');
 const autoreplayCheckbox = settingsLine.querySelector('.yt-controls-replay');
 const storehistoryCheckbox = settingsLine.querySelector('.yt-controls-store-history');
+
+let appState = {
+    autoReplay: false,
+    alwaysHD:   false,
+    storeHistory: false,
+};
+
+let curVideoId = false;
 
 function saveAppState() {
     localStorage.setItem('plain_yt_controls', JSON.stringify(appState));
