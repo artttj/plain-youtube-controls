@@ -38,15 +38,13 @@ getInitialAppState();
 
 hdCheckbox.addEventListener('change', function (e) {
     appState.alwaysHD = e.target.checked;
-    if (appState.alwaysHD) {
-        let bestQuality = $player.getAvailableQualityLevels()[0];
-        $player.setPlaybackQuality(bestQuality);
-    }
+    listenPlayerState();
     saveAppState();
 });
 
 autoreplayCheckbox.addEventListener('change', function (e) {
     appState.autoReplay = e.target.checked;
+    listenPlayerState();
     saveAppState();    
 });
 
@@ -93,12 +91,19 @@ function checkForVideoCrash(state) {
     }    
 }
 
-$player.addEventListener('onStateChange', function (state) {
+function checkState(state) {
     if ($player.classList.contains('unstarted-mode')) return;
     appState.autoReplay && autoReplay(state);
     appState.alwaysHD && setBestQuality(state);    
     checkForVideoCrash(state);
-});
+}
+
+function listenPlayerState() {
+    $player.removeEventListener('onStateChange');    
+    $player.addEventListener('onStateChange', checkState);
+}
+
+listenPlayerState();
 
 // finally drawing controls
 $player.parentNode.appendChild(settingsLine);
