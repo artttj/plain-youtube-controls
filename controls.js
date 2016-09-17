@@ -4,7 +4,8 @@ const $player = document.getElementById('movie_player');
 
 let appState = {
     autoReplay: false,
-    alwaysHD:   false
+    alwaysHD:   false,
+    storeHistory: false,
 };
 
 let curVideoId = false;
@@ -19,14 +20,16 @@ const timingInterval = setInterval(function(){
 // control panel template
 const settingsLine = document.createElement('DIV');
 settingsLine.className = 'plain-youtube-controls js-plain-youtube-controls';
-settingsLine.setAttribute('style', 'width: 20em; height: auto; color: #607D8B; ');
+settingsLine.setAttribute('style', 'width: 30em; height: auto; color: #607D8B; ');
 settingsLine.innerHTML = `
     <label><input type="checkbox" class="yt-controls-replay"/>Auto Replay</label>
     <label><input type="checkbox" class="yt-controls-always-hd"/>Always HD</label>
+    <label><input type="checkbox" class="yt-controls-store-history"/>Remember Time</label>    
     `;
 
 const hdCheckbox = settingsLine.querySelector('.yt-controls-always-hd');
 const autoreplayCheckbox = settingsLine.querySelector('.yt-controls-replay');
+const storehistoryCheckbox = settingsLine.querySelector('.yt-controls-store-history');
 
 function saveAppState() {
     localStorage.setItem('plain_yt_controls', JSON.stringify(appState));
@@ -54,6 +57,11 @@ hdCheckbox.addEventListener('change', function (e) {
 autoreplayCheckbox.addEventListener('change', function (e) {
     appState.autoReplay = e.target.checked;
     listenPlayerState();
+    saveAppState();    
+});
+
+storehistoryCheckbox.addEventListener('change', function (e) {
+    appState.storeHistory = e.target.checked;
     saveAppState();    
 });
 
@@ -110,7 +118,7 @@ function getVideoTiming(state) {
 
 function checkState(state) {
     if ($player.classList.contains('unstarted-mode')) return;
-    getVideoTiming(state);
+    appState.storeHistory && getVideoTiming(state);
     appState.autoReplay && autoReplay(state);
     appState.alwaysHD && setBestQuality(state);    
     checkForVideoCrash(state);
