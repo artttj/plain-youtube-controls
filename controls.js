@@ -106,8 +106,8 @@ function checkForVideoCrash(state) {
 
 function getVideoTiming(state) {
     if (state === 1 && curVideoId !== $player.getVideoData().video_id) {
-        let lastTime = localStorage.getItem('ytc_' + $player.getVideoData().video_id);    
-        lastTime && $player.seekTo(lastTime);
+        const video = JSON.parse(localStorage.getItem('ytc_' + $player.getVideoData().video_id));
+        video && $player.seekTo(video.lastTime);
         curVideoId = $player.getVideoData().video_id;       
     }
     clearInterval(timingInterval);
@@ -115,7 +115,7 @@ function getVideoTiming(state) {
         if (state === 0 || !$player.getCurrentTime() || $player.classList.contains('unstarted-mode')) return;
         localStorage.setItem(
             'ytc_' + $player.getVideoData().video_id, 
-            $player.getCurrentTime()
+            JSON.stringify({lastTime: $player.getCurrentTime(), t: Date.now()})
         );
     }, 3000);
     if (state === 0) {
@@ -125,6 +125,7 @@ function getVideoTiming(state) {
 
 function checkState(state) {
     if ($player.classList.contains('unstarted-mode')) return;
+    cleanOldVideoTimings();
     appState.storeHistory && getVideoTiming(state);
     appState.autoReplay && autoReplay(state);
     appState.alwaysHD && setBestQuality(state);    
@@ -134,6 +135,17 @@ function checkState(state) {
 function listenPlayerState() {
     $player.removeEventListener('onStateChange');    
     $player.addEventListener('onStateChange', checkState);
+}
+
+function cleanOldVideoTimings() {
+  const MILLISECONDS_IN_MONTH = 2592000000; // 30 * 24 * 60 * 60 * 1000
+  const NOW = Date.now();
+  for (let key in localStorage) {
+    if (key.includes('ytc_')) {
+      let {t} = JSON.parse(localStorage.getItem(key));
+      if (NOW - t > MILLISECONDS_IN_MONTH) localStorage.removeItem(key);
+    }
+  }
 }
 
 listenPlayerState();
